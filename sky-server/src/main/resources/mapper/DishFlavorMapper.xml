@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishFlavorMapper">
+    <!-- 新增口味 -->
+    <insert id="insertBatch">
+        insert into dish_flavor(dish_id, name, value) values
+        <foreach collection="flavors" item="f" separator=",">
+            (#{f.dishId},#{f.name},#{f.value})
+        </foreach>
+    </insert>
+
+    <!-- 判断菜品是否关联的口味 -->
+    <select id="isReleve" resultType="Long">
+        select df.id from dish_flavor df join dish d on d.id = df.dish_id
+            <foreach collection="ids" item="id" separator=",">
+                df.dish_id = #{id}
+            </foreach>
+    </select>
+
+    <!-- 根据菜品id集合删除口味 -->
+    <delete id="deleteByDishIds">
+        delete from dish_flavor where dish_id in
+            <foreach collection="dishIds" separator="," open="(" close=")" item="dishId">
+                #{dishId}
+            </foreach>
+    </delete>
+
+</mapper>
