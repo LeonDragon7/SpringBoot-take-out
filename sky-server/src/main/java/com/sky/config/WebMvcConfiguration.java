@@ -46,17 +46,38 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 通过knife4j生成接口文档
      * @return
      */
+
+    //管理端
     @Bean
-    public Docket docket() {
+    public Docket docketAdmin() {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("take_out")
                 .version("2.0")
                 .description("Takeaway project interface documentation")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("管理端接口")
                 .apiInfo(apiInfo)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
+                .paths(PathSelectors.any())
+                .build();
+        return docket;
+    }
+
+    //用户端
+    @Bean
+    public Docket docketUser() {
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("take_out")
+                .version("2.0")
+                .description("Takeaway project interface documentation")
+                .build();
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("用户端接口")
+                .apiInfo(apiInfo)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
                 .paths(PathSelectors.any())
                 .build();
         return docket;
