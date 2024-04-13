@@ -17,6 +17,7 @@ public interface ShoppingCartMapper {
      */
     List<ShoppingCart> list(ShoppingCart shoppingCart);
 
+
     /**
      * 根据id修改商品数量
      * @param shoppingCart
@@ -32,4 +33,5 @@ public interface ShoppingCartMapper {
             "values " +
             "(#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{amount},#{createTime})")
     void insert(ShoppingCart shoppingCart);
+
 }
