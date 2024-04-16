@@ -21,6 +21,7 @@ import com.sky.service.SetmealService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -203,5 +204,33 @@ public class OrderServiceImpl implements OrderService {
 
        //4.将购物车对象批量添加到数据库
         shoppingCartMapper.insertBatch(shoppingCartList);
+    }
+
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //设置分页
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        // 分页条件查询
+        Page<Orders> orderPage = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<OrderVO> orderVOList = new ArrayList<>();
+        // 查询出订单明细，并封装入OrderVO进行响应
+        if(orderPage != null && orderPage.getTotal() > 0){
+            for (Orders order : orderPage) {
+                //根据订单id查询订单详细表
+                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(order.getId());
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(order,orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOList.add(orderVO);
+            }
+        }
+        return new PageResult(orderPage.getTotal(), orderVOList);
     }
 }

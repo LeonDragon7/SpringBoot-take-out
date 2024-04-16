@@ -42,5 +42,10 @@ public interface OrderService {
      */
     void repetition(Long id);
 
-
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO);
 }
