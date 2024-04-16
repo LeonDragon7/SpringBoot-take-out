@@ -31,6 +31,11 @@ public interface ShoppingCartMapper {
             "(#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{amount},#{createTime})")
     void insert(ShoppingCart shoppingCart);
 
+    /**
+     * 批量添加购物车
+     * @param shoppingCartList
+     */
+    void insertBatch(List<ShoppingCart> shoppingCartList);
 
     /**
      * 根据用户id清除购物车
