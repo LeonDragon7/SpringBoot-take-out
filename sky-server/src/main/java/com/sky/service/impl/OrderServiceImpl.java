@@ -174,7 +174,7 @@ public class OrderServiceImpl implements OrderService {
 
         Map map = new HashMap();
         map.put("type",2);//1来电提醒 2催单
-        map.put("orderId",orders.getId());
+        map.put("orderId",id);
         map.put("content","订单号：" + orders.getNumber());
 
         String jsonString = JSON.toJSONString(map);
