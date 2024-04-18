@@ -10,12 +10,14 @@ import com.sky.vo.UserReportVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @Slf4j
@@ -85,4 +87,16 @@ public class ReportController {
     ){
         return Result.success(reportService.top10(begin,end));
     }
+
+    /**
+     * 导出Excel报表
+     * @return
+     */
+    @ApiOperation("导出Excel报表")
+    @GetMapping("/export")
+    public Result export(HttpServletResponse response){
+        reportService.export(response);
+        return Result.success();
+    }
+
 }
