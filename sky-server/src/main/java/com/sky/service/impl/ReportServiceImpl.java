@@ -1,13 +1,17 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
+import com.sky.entity.Dish;
+import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.User;
+import com.sky.mapper.DishMapper;
+import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
+import com.sky.service.OrderService;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,6 +33,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
     /**
      * 统计指定时间区间内的营业额
      * @param begin
@@ -180,5 +187,36 @@ public class ReportServiceImpl implements ReportService {
         map.put("status",status);
 
         return orderMapper.countByMap(map);
+    }
+
+    /**
+     * 查询指定时间区间内销量排名top10
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = LocalDateTime.of(begin,LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end,LocalTime.MAX);
+        Map<String, Object> map = new HashMap<>();
+        map.put("begin",beginTime);
+        map.put("end",endTime);
+        //select sum(od.number) number,od.name from order_detail od,orders o
+        // where od.order_id = o.id and o.order_time > ? and o.order_time < ? and o.status = 5
+        // group by od.name
+        // order by number desc
+        // limit 0,10;
+        List<GoodsSalesDTO> orderDetailList = orderDetailMapper.saleTop10ByMap(map);
+        //商品名称列表
+        List<String> nameList = orderDetailList.stream().filter(name -> name.getName() != null)
+                .map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        //销售列表
+        List<Integer> numberList = orderDetailList.stream().filter(number -> number.getNumber() != 0)
+                .map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+        return SalesTop10ReportVO.builder()
+                .nameList(StringUtils.join(nameList,","))
+                .numberList(StringUtils.join(numberList,","))
+                .build();
     }
 }
