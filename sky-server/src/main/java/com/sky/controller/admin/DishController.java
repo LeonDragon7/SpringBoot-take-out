@@ -35,6 +35,7 @@ public class DishController {
     @ApiOperation("新增菜品")
     @PostMapping
     public Result save(@RequestBody DishDTO dishDTO){
+        log.info("菜品数据:{}",dishDTO);
         dishService.insertWithFlavor(dishDTO);
         //清理缓存数据
         String key = "dish_" + dishDTO.getCategoryId();
